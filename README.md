@@ -1,7 +1,5 @@
 # u6c pc webcam scanner
 
-desktop version of the u6c sigint / ufo scanner idea. it runs on a windows pc with a webcam, or it can use a phone camera over the local network.
-
 it does not need android, pydroid, or kivy.
 
 ---
