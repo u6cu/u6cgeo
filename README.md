@@ -11,7 +11,7 @@ it does not need android, pydroid, or kivy.
 from the project folder:
 
 ```powershell
-cd .\minos_pc_webcam
+cd .\u6cgeo
 ```
 
 pc webcam as the camera, with the processed view hosted on the lan so it can be opened on a phone:
@@ -43,7 +43,7 @@ fps is capped at 60. use 20 for lighter cpu usage, 30 for a better live view, or
 to build a windows exe release folder:
 
 ```powershell
-cd .\minos_pc_webcam
+cd .\u6cgeo
 .\build_u6c_exe.ps1
 ```
 
