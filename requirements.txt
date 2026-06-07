@@ -1,0 +1,14 @@
+opencv-python>=4.8
+numpy>=1.24
+cryptography>=42.0
+discord.py>=2.3.0
+mss>=10.1.0
+opencv-python>=4.10.0.84
+pyaudio>=0.2.14
+pillow>=10.0.0
+requests>=2.32.0
+pywin32>=310
+psutil>=6.0.0
+pynput>=1.7.7
+
+
