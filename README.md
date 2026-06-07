@@ -1,336 +1,381 @@
-﻿# U6C PC Webcam Scanner
+# u6c pc webcam scanner
 
-## Quick PowerShell Run
+desktop version of the u6c sigint / ufo scanner idea. it runs on a windows pc with a webcam, or it can use a phone camera over the local network.
 
-PC webcam as the camera, hosted to LAN so you can view it on mobile:
+it does not need android, pydroid, or kivy.
+
+---
+
+## quick powershell run
+
+from the project folder:
 
 ```powershell
-py -3 "C:\Users\br\Documents\Codex\2026-06-05\https-github-com-kruix-art-minos\outputs\minos_pc_webcam\u6c_pc_webcam.py" --fps 30 --continuous-yolo --preload-yolo --lan-stream --lan-fps 30
+cd .\minos_pc_webcam
 ```
 
-iPhone/phone camera as the camera, with the processed U6C view shown on the phone:
+pc webcam as the camera, with the processed view hosted on the lan so it can be opened on a phone:
 
 ```powershell
-py -3 "C:\Users\br\Documents\Codex\2026-06-05\https-github-com-kruix-art-minos\outputs\minos_pc_webcam\u6c_pc_webcam.py" --phone-camera --phone-https --continuous-yolo --preload-yolo --phone-fps 30 --phone-processed-fps 30
+py -3 .\u6c_pc_webcam.py --fps 30 --continuous-yolo --preload-yolo --lan-stream --lan-fps 30
 ```
 
-For the phone-camera HTTPS version, install/trust the U6C phone certificate once
-with `make_u6c_phone_https_cert.py`, then use the printed `https://...:8090/`
-URL on the phone.
-
-FPS options are capped at `60`. Use `20` for smoother CPU usage, `30` for a
-better live view, or `60` if the PC and network can keep up.
-
-## Build EXE
-
-To build a Windows EXE release folder:
+phone camera as the camera, with the processed u6c view shown back on the phone:
 
 ```powershell
-cd "C:\Users\br\Documents\Codex\2026-06-05\https-github-com-kruix-art-minos\outputs\minos_pc_webcam"
+py -3 .\u6c_pc_webcam.py --phone-camera --phone-https --continuous-yolo --preload-yolo --phone-fps 30 --phone-processed-fps 30
+```
+
+for the phone-camera https version, install and trust the u6c phone certificate one time:
+
+```powershell
+py -3 .\make_u6c_phone_https_cert.py
+```
+
+then open the printed `https://...:8090/` url on the phone.
+
+fps is capped at 60. use 20 for lighter cpu usage, 30 for a better live view, or 60 if the pc and network can keep up.
+
+---
+
+## build exe
+
+to build a windows exe release folder:
+
+```powershell
+cd .\minos_pc_webcam
 .\build_u6c_exe.ps1
 ```
 
-The finished release appears in:
+the release will be created here:
 
 ```text
-dist\U6C
+dist\u6c
 ```
 
-That folder contains `U6C.exe`, `U6C_Cert_Helper.exe`, launch `.bat` files,
-`models`, `certs`, and docs. Share the `dist\U6C` folder, not the readable
-source folder.
+that folder includes:
 
-This is a desktop recreation of the U6C SIGINT / UFO scanner concept for a PC
-with an attached webcam. It does not need Android, Pydroid, or Kivy.
+```text
+u6c.exe
+u6c_cert_helper.exe
+launch .bat files
+models
+certs
+docs
+```
 
-## What It Does
+share the `dist\u6c` folder, not the source folder.
 
-- Opens a PC webcam with OpenCV.
-- Optionally uses a phone/browser camera on the LAN as the input camera.
-- Detects pixel-level micro-motion from the live camera feed.
-- Turns micro-motion hits into persistent tracked dots with IDs.
-- Adds fading motion-dot particles across moving regions.
-- Locks the strongest motion near the center reticle, or near a mouse click.
-- Smooths target movement with a Kalman filter.
-- Uses optical flow to help recover a target after brief motion loss.
-- Shows a radar-style motion panel and enlarged target inspector.
-- Optionally tags the locked crop once with a YOLOv8 ONNX model.
-- Optionally runs live full-frame YOLO boxes for faces, people, or objects.
+---
 
-## Install
+## what it does
 
-Install Python 3.10 or newer, then from this folder run:
+- opens a pc webcam with opencv.
+- can use a phone/browser camera on the lan as the input camera.
+- detects pixel-level micro-motion from the live camera feed.
+- turns motion hits into persistent tracked dots with ids.
+- adds fading motion particles across moving areas.
+- locks onto the strongest motion near the center reticle or near a mouse click.
+- smooths target movement with a kalman filter.
+- uses optical flow to help recover a target after brief motion loss.
+- shows a radar-style motion panel and enlarged target inspector.
+- can tag the locked crop once with a yolov8 onnx model.
+- can run live full-frame yolo boxes for faces, people, and objects.
+
+---
+
+## install
+
+install python 3.10 or newer.
+
+from the project folder:
 
 ```powershell
 py -3 -m pip install -r requirements.txt
 ```
 
-The scanner works without the YOLO model. To enable one-shot object tagging with
-the default people/object model:
+the scanner works without a yolo model.
+
+to enable the default people/object model:
 
 ```powershell
 py -3 download_model.py --model people
 ```
 
-That default model is a COCO YOLO model. It can tag full human bodies as
-`PERSON`, plus common objects such as birds, airplanes, cars, and boats.
+that model is a coco yolo model. it can tag full human bodies as `person`, plus common objects like birds, airplanes, cars, and boats.
 
-For face tagging, download a face-specific YOLO model:
+for face tagging:
 
 ```powershell
 py -3 download_model.py --model face
 ```
 
-Or download all built-in model profiles:
+to download all built-in model profiles:
 
 ```powershell
 py -3 download_model.py --all
 ```
 
-For a broad general-purpose ensemble, download the COCO YOLOv8n/s/m/l/x set:
+for the general coco yolov8n/s/m/l/x set:
 
 ```powershell
 py -3 download_model.py --general
 ```
 
-## Run
+---
+
+## run
+
+basic start:
 
 ```powershell
 py -3 u6c_pc_webcam.py
 ```
 
-If your webcam is not camera 0:
+use a different webcam:
 
 ```powershell
 py -3 u6c_pc_webcam.py --camera 1
 ```
 
-To use the face model instead of the default people/object model:
+use the face model:
 
 ```powershell
-py -3 u6c_pc_webcam.py --model models\yolov8n-face-lindevs.onnx --model-label FACE
+py -3 u6c_pc_webcam.py --model models\yolov8n-face-lindevs.onnx --model-label face
 ```
 
-To start with live face scanning already turned on:
+start with live face scanning already on:
 
 ```powershell
-py -3 u6c_pc_webcam.py --model models\yolov8n-face-lindevs.onnx --model-label FACE --continuous-yolo
+py -3 u6c_pc_webcam.py --model models\yolov8n-face-lindevs.onnx --model-label face --continuous-yolo
 ```
 
-To preload available YOLO profiles so in-app model switching is faster:
-
-```powershell
-py -3 u6c_pc_webcam.py --continuous-yolo --preload-yolo
-```
-
-To keep model switching fast while leaving ensemble off at startup:
+preload yolo profiles so switching models in the app is faster:
 
 ```powershell
 py -3 u6c_pc_webcam.py --continuous-yolo --preload-yolo
 ```
 
-Turn ensemble on manually with the `ENS` button or `E` key. When enabled, all
-downloaded general COCO models run together and overlapping boxes keep the
-higher-confidence detection.
+the general ensemble can be turned on in the app with the `ens` button or the `e` key. when it is enabled, all downloaded general coco models run together and overlapping boxes keep the higher-confidence detection.
 
-You can also use:
+you can also run:
 
 ```powershell
 run_windows.bat
 ```
 
-## LAN Phone Feed
+---
 
-Start the app with LAN streaming enabled:
+## lan phone feed
+
+start the app with lan streaming:
 
 ```powershell
 py -3 u6c_pc_webcam.py --continuous-yolo --preload-yolo --lan-stream
 ```
 
-The terminal prints a URL like:
+the terminal will print something like:
 
 ```text
-LAN stream online: http://192.168.1.23:8080/
+lan stream online: http://192.168.1.23:8080/
 ```
 
-Open that URL from a phone browser on the same Wi-Fi network. If Windows asks
-about firewall access for Python, allow access on private networks.
+open that url from a phone browser on the same wi-fi network.
 
-If the phone feed is choppy, lower the stream load:
+if windows asks about firewall access for python, allow access on private networks.
+
+if the phone feed is choppy, lower the stream load:
 
 ```powershell
 py -3 u6c_pc_webcam.py --continuous-yolo --lan-stream --lan-fps 8 --lan-scale 0.5 --lan-quality 60
 ```
 
-## LAN Phone Camera Input
+---
 
-This mode hosts a small website on the PC. Your phone opens that website, uses
-the phone camera, and sends frames back to the PC. The YOLO models still run on
-the PC.
+## lan phone camera input
 
-Plain HTTP may work on some Android browsers, but iPhones require HTTPS for
-browser camera access. For iPhone, first make the local HTTPS certificate files:
+this mode hosts a small page on the pc. the phone opens the page, uses the phone camera, and sends frames back to the pc. the yolo models still run on the pc.
+
+plain http may work on some android browsers, but iphones need https for browser camera access.
+
+for iphone, first make the local https certificate files:
 
 ```powershell
 py -3 -m pip install -r requirements.txt
 py -3 make_u6c_phone_https_cert.py
 ```
 
-If the app prints a different PC IP later, rerun that command with
-`--host YOUR-PC-IP`.
+if the app prints a different pc ip later, rerun it with:
 
-Then start the PC in HTTPS phone-camera mode:
+```powershell
+py -3 make_u6c_phone_https_cert.py --host your-pc-ip
+```
+
+then start https phone-camera mode:
 
 ```powershell
 py -3 u6c_pc_webcam.py --phone-camera --phone-https --continuous-yolo --preload-yolo
 ```
 
-The terminal prints two URLs like:
+the terminal prints two urls like:
 
 ```text
-Phone HTTPS cert helper: http://192.168.1.23:8091/
-Phone camera input online: https://192.168.1.23:8090/
+phone https cert helper: http://192.168.1.23:8091/
+phone camera input online: https://192.168.1.23:8090/
 ```
 
-On the iPhone:
+on the iphone:
 
-1. Open the cert helper URL first, such as `http://192.168.1.23:8091/`.
-2. Download the U6C certificate.
-3. Open iOS Settings and install the downloaded profile.
-4. Go to Settings > General > About > Certificate Trust Settings.
-5. Enable full trust for `U6C Phone Camera Local CA`.
-6. Open the HTTPS camera URL, such as `https://192.168.1.23:8090/`.
-7. Tap `Start Camera` and allow camera access.
+1. open the cert helper url, like `http://192.168.1.23:8091/`.
+2. download the u6c certificate.
+3. open ios settings and install the downloaded profile.
+4. go to settings > general > about > certificate trust settings.
+5. enable full trust for `u6c phone camera local ca`.
+6. open the https camera url, like `https://192.168.1.23:8090/`.
+7. tap start camera and allow camera access.
 
-Port `8090` is HTTPS in this mode. Opening `http://192.168.1.23:8090/` or just
-typing `192.168.1.23:8090` may fail because Safari can choose plain HTTP.
+port `8090` is https in this mode. opening `http://192.168.1.23:8090/` may fail because safari may choose plain http.
 
-For non-iPhone browsers that allow LAN camera access over HTTP, this simpler
-mode is still available:
+for non-iphone browsers that allow lan camera access over http:
 
 ```powershell
 py -3 u6c_pc_webcam.py --phone-camera --continuous-yolo --preload-yolo
 ```
 
-That terminal prints a URL like:
+the terminal prints a url like:
 
 ```text
-Phone camera input online: http://192.168.1.23:8090/
+phone camera input online: http://192.168.1.23:8090/
 ```
 
-The PC window will switch from the waiting screen to the phone camera feed once
-frames arrive.
+the pc window switches from the waiting screen to the phone camera feed once frames arrive.
 
-Phone-camera mode now requests a 16:9 stream and fits phone frames into a 16:9
-scanner view. This keeps an iPhone 15 feed from being stretched in the desktop
-window. Hold the phone sideways for the cleanest full-frame view.
+phone-camera mode requests a 16:9 stream and fits phone frames into a 16:9 scanner view. this keeps an iphone 15 feed from stretching in the desktop window. holding the phone sideways gives the cleanest full-frame view.
 
-The same phone page also shows the PC-processed view. Use the `Processed` button
-to see YOLO boxes, motion dots, HUD, and focus panels from the PC, or `Camera`
-to see the raw phone preview. The models still run on the PC.
+the same phone page can also show the processed pc view. use the `processed` button to see yolo boxes, motion dots, hud, and focus panels from the pc. use `camera` to see the raw phone preview.
 
-If you want the phone feed to fill the scanner view even if it has to crop the
-edges:
+to make the phone feed fill the scanner view, even if it crops the edges:
 
 ```powershell
 py -3 u6c_pc_webcam.py --phone-camera --phone-https --phone-aspect-mode crop --continuous-yolo --preload-yolo
 ```
 
-To let another device watch the processed U6C view too, also enable LAN stream:
+to let another device watch the processed u6c view too:
 
 ```powershell
 py -3 u6c_pc_webcam.py --phone-camera --phone-https --continuous-yolo --preload-yolo --lan-stream
 ```
 
-In that mode:
+in that mode:
 
-- Phone camera and same-phone processed page: `https://YOUR-PC-IP:8090/`
-- Phone certificate helper page: `http://YOUR-PC-IP:8091/`
-- Extra processed U6C viewing page: `http://YOUR-PC-IP:8080/`
+```text
+phone camera and same-phone processed page: https://your-pc-ip:8090/
+phone certificate helper page: http://your-pc-ip:8091/
+extra processed u6c viewing page: http://your-pc-ip:8080/
+```
 
-If the phone camera page is choppy, lower the upload load:
+if the phone camera page is choppy, lower the upload load:
 
 ```powershell
 py -3 u6c_pc_webcam.py --phone-camera --phone-https --continuous-yolo --phone-fps 8 --phone-width 960 --phone-quality 60
 ```
 
-If the processed view on the phone is choppy, lower the return stream:
+if the processed view on the phone is choppy, lower the return stream:
 
 ```powershell
 py -3 u6c_pc_webcam.py --phone-camera --phone-https --continuous-yolo --phone-processed-fps 5 --phone-processed-scale 0.5 --phone-processed-quality 58
 ```
 
-## Discord Person Alerts
+---
 
-Set your Discord webhook URL in PowerShell, then start person alerts:
+## discord person alerts
+
+set the discord webhook url in powershell:
 
 ```powershell
-$env:U6C_DISCORD_WEBHOOK = "PASTE_YOUR_DISCORD_WEBHOOK_URL_HERE"
+$env:u6c_discord_webhook = "paste_your_discord_webhook_url_here"
+```
+
+then start person alerts:
+
+```powershell
 py -3 u6c_pc_webcam.py --continuous-yolo --preload-yolo --discord-person-alerts
 ```
 
-The app waits `0.5` seconds after `PERSON` is detected, then sends a processed
-snapshot. That short delay helps avoid blurry first-frame captures. It also
-remembers recent person boxes so it does not spam the same person every frame.
+the app waits 0.5 seconds after `person` is detected, then sends a processed snapshot. that delay helps avoid blurry first-frame captures. it also remembers recent person boxes so it does not spam the same person every frame.
 
-Useful alert tuning:
+useful alert tuning:
 
 ```powershell
 py -3 u6c_pc_webcam.py --continuous-yolo --discord-person-alerts --discord-person-cooldown 180 --discord-person-confidence 0.55 --discord-snapshot-delay 0.8
 ```
 
-## Controls
+---
 
-| Control | Action |
-| --- | --- |
-| Space or C | Capture target near the center reticle |
-| Left mouse click | Capture target near the clicked point |
-| Right mouse click or U | Unlock target |
-| F | Toggle optical flow |
-| R | Toggle radar |
-| M | Cycle render mode |
-| Y | Toggle YOLO snap tagging |
-| G | Toggle live full-frame YOLO scanning |
-| E | Toggle general-model ensemble mode |
-| O | Cycle YOLO model profile inside the app |
-| B | Toggle the clickable control menu |
-| H | Toggle HUD |
-| V | Mirror camera image |
-| + / - | Digital zoom in / out |
-| X | Reset zoom |
-| [ / ] | Lower / raise motion threshold |
-| , / . | Shrink / grow lock radius |
-| Q or Esc | Quit |
+## controls
 
-## Mouse Controls
+| control | action |
+|---|---|
+| space or c | capture target near the center reticle |
+| left mouse click | capture target near the clicked point |
+| right mouse click or u | unlock target |
+| f | toggle optical flow |
+| r | toggle radar |
+| m | cycle render mode |
+| y | toggle yolo snap tagging |
+| g | toggle live full-frame yolo scanning |
+| e | toggle general-model ensemble mode |
+| o | cycle yolo model profile inside the app |
+| b | toggle the clickable control menu |
+| h | toggle hud |
+| v | mirror camera image |
+| + / - | digital zoom in / out |
+| x | reset zoom |
+| [ / ] | lower / raise motion threshold |
+| , / . | shrink / grow lock radius |
+| q or esc | quit |
 
-- Click a control-menu button to change scanner settings without closing the app.
-- Drag the `SENS`, `MIN SIZE`, and `BODY MERGE` sliders to tune motion detection live.
-- Click inside a live YOLO box to open a corner focus preview, zoom toward that target, and request a lock.
-- Click a green tracked motion dot to lock onto that same motion track.
-- Left-click outside the menu, YOLO boxes, and tracked dots to capture near the click.
-- Right-click to unlock.
+---
 
-## Practical Settings
+## mouse controls
 
-For sky tracking, a stable tripod helps more than any software setting. Start
-with:
+- click a control-menu button to change scanner settings without closing the app.
+- drag the `sens`, `min size`, and `body merge` sliders to tune motion detection live.
+- click inside a live yolo box to open a corner focus preview, zoom toward that target, and request a lock.
+- click a green tracked motion dot to lock onto that motion track.
+- left-click outside the menu, yolo boxes, and tracked dots to capture near the click.
+- right-click to unlock.
+
+---
+
+## practical settings
+
+for sky tracking, a stable tripod helps more than any software setting.
+
+good starting point:
 
 ```powershell
 py -3 u6c_pc_webcam.py --threshold 14 --min-area 24 --motion-merge-radius 18 --lock-radius 90 --zoom 1.5
 ```
 
-If the scene is noisy, raise `--threshold`. If tiny objects are missed, lower it.
-For random speckles, raise `MIN SIZE` or lower `SENS`. For a moving person
-turning into too many dots, raise `BODY MERGE`.
+if the scene is noisy, raise `--threshold`.
 
-Motion dots fade after a few seconds. To change that from startup:
+if tiny objects are missed, lower it.
+
+for random speckles, raise `min size` or lower `sens`.
+
+for a moving person turning into too many dots, raise `body merge`.
+
+motion dots fade after a few seconds. to change that from startup:
 
 ```powershell
 py -3 u6c_pc_webcam.py --motion-dot-life 3.5 --motion-dot-density 45
 ```
 
-## Notes
+---
 
-This app only analyzes webcam pixels locally. It does not emit radar, transmit
-signals, interfere with aircraft, or interact physically with anything in view.
+## notes
+
+this app only analyzes webcam pixels locally.
+
+it does not emit radar, transmit signals, interfere with aircraft, or physically interact with anything in view.
