@@ -62,7 +62,6 @@ certs
 docs
 ```
 
-share the `dist\u6c` folder, not the source folder.
 
 ---
 
